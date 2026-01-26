@@ -47,16 +47,30 @@ void Init(void)
 	// 描画に使用する画像の読み込み
 	texWhite = LoadGraph("Data/White.png");
 
+	psSimpleColor_ = LoadPixelShader("x64/Debug/SimpleColor.cso");
+
+	// ピクセルシェーダのロード
+	psCustomColor = LoadPixelShader((PATH_SHADER + "CustomColor.cso").c_str());
+	// ピクセルシェーダー用の定数バッファを作成
+	psCustomColorConstBuf = CreateShaderConstantBuffer(sizeof(float) * 4);
+
+	// ピクセルシェーダのロード
+	psCircleColor = LoadPixelShader((PATH_SHADER + "CircleColor.cso").c_str());
+	// ピクセルシェーダー用の定数バッファを作成
+	psCircleColorConstBuf = CreateShaderConstantBuffer(sizeof(float) * 4);
 }
 
 void Release(void)
 {
 
 	// ピクセルシェーダーを解放
-
+	DeleteShader(psSimpleColor_);
+	DeleteShader(psCustomColor);
+	DeleteShader(psCircleColor);
 
 	// ピクセルシェーダー用定数バッファを解放
-
+	DeleteShaderConstantBuffer(psCustomColorConstBuf);
+	DeleteShaderConstantBuffer(psCircleColorConstBuf);
 
 }
 
@@ -99,6 +113,19 @@ void Run(void)
 		// 通常の描画
 		DrawTitle("DrawGraph");
 		DrawGraph(mPosX, mPosY, texDragon, true);
+		mPosX += PLUS_X;
+
+		//単色の描画
+		DrawSimpleColor();
+		mPosX += PLUS_X;
+
+
+		//指定色の描画
+		DrawCustomColor();
+		mPosX += PLUS_X;
+
+	
+		DrawCircleColor();
 		mPosX += PLUS_X;
 
 		// 裏画面に描画
@@ -213,4 +240,83 @@ void DrawTitle(std::string title)
 void DrawFrame(void)
 {
 	DrawBox(mPosX - 1, mPosY - 1, mPosX + IMG_SIZE_X, mPosY + IMG_SIZE_Y, 0x000000, false);
+}
+
+void DrawSimpleColor(void)
+{
+	DrawTitle("単色");
+	//シェーダーの設定
+	SetUsePixelShader(psSimpleColor_);
+	//ポリゴンの生成
+	MakeSquereVertex();
+	//描画
+	DrawPolygonIndexed2DToShader(mVertex, 4, mIndex, 2);
+}
+
+void DrawCustomColor(void)
+{
+
+	DrawTitle("指定色");
+	//シェーダーの設定
+	SetUsePixelShader(psCustomColor);
+
+	// ピクセルシェーダー用の定数バッファのアドレスを取得
+
+	//float* cbBufFloat = (float*)GetBufferShaderConstantBuffer(psCustomColorConstBuf);
+	////R
+	//*cbBufFloat = 0.5f;
+	//cbBufFloat++;
+	////G
+	//*cbBufFloat = 0.5f;
+	//cbBufFloat++;
+	////B
+	//*cbBufFloat = 0.5f;
+	//cbBufFloat++;
+	////A
+	//*cbBufFloat = 1.0f;
+	//cbBufFloat++;
+
+	// ピクセルシェーダー用の定数バッファのアドレスを取得
+	COLOR_F* cbBuf = (COLOR_F*)GetBufferShaderConstantBuffer(psCustomColorConstBuf);
+	cbBuf->r = 0.5f;
+	cbBuf->g = 0.5f;
+	cbBuf->b = 0.5f;
+	cbBuf->a = 1.0f;
+
+	// ピクセルシェーダー用の定数バッファを更新して書き込んだ内容を反映する
+	UpdateShaderConstantBuffer(psCustomColorConstBuf);
+	// ピクセルシェーダー用の定数バッファを定数バッファレジスタにセット
+	SetShaderConstantBuffer(psCustomColorConstBuf, DX_SHADERTYPE_PIXEL, 0);
+
+	//ポリゴンの生成
+	MakeSquereVertex();
+	//描画
+	DrawPolygonIndexed2DToShader(mVertex, 4, mIndex, 2);
+}
+
+void DrawCircleColor(void)
+{
+
+	DrawTitle("指定色");
+	//シェーダーの設定
+	SetUsePixelShader(psCircleColor);
+
+
+
+	// ピクセルシェーダー用の定数バッファのアドレスを取得
+	COLOR_F* cbBuf = (COLOR_F*)GetBufferShaderConstantBuffer(psCircleColorConstBuf);
+	cbBuf->r = 0.5f;
+	cbBuf->g = 0.5f;
+	cbBuf->b = 0.5f;
+	cbBuf->a = 1.0f;
+
+	// ピクセルシェーダー用の定数バッファを更新して書き込んだ内容を反映する
+	UpdateShaderConstantBuffer(psCircleColorConstBuf);
+	// ピクセルシェーダー用の定数バッファを定数バッファレジスタにセット
+	SetShaderConstantBuffer(psCircleColorConstBuf, DX_SHADERTYPE_PIXEL, 0);
+
+	//ポリゴンの生成
+	MakeSquereVertex();
+	//描画
+	DrawPolygonIndexed2DToShader(mVertex, 4, mIndex, 2);
 }

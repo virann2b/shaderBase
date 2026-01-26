@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ProjectOutputs>
+    <ProjectOutput>
+      <FullPath>C:\Users\2416003\Desktop\Shader\PixcelShaderBase\Study_01_BASE\x64\Debug\BaseProject.exe</FullPath>
+    </ProjectOutput>
+  </ProjectOutputs>
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\Users\2416003\Desktop\Shader\PixcelShaderBase\Study_01_BASE\x64\Debug\CustomColor.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\2416003\Desktop\Shader\PixcelShaderBase\Study_01_BASE\x64\Debug\CircleColor.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\2416003\Desktop\Shader\PixcelShaderBase\Study_01_BASE\x64\Debug\SimpleColor.cso</FullPath>
+    </ContentFile>
+  </ContentFiles>
+  <SatelliteDlls />
+  <NonRecipeFileRefs />
+</Project>
