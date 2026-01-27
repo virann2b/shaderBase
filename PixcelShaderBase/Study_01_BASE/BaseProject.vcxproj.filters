@@ -31,5 +31,7 @@
     <FxCompile Include="Src\SimpleColor.hlsl" />
     <FxCompile Include="Src\CustomColor.hlsl" />
     <FxCompile Include="Src\CircleColor.hlsl" />
+    <FxCompile Include="Src\Texture.hlsl" />
+    <FxCompile Include="Src\Dissering.hlsl" />
   </ItemGroup>
 </Project>

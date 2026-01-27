@@ -56,8 +56,15 @@ void Init(void)
 
 	// ピクセルシェーダのロード
 	psCircleColor = LoadPixelShader((PATH_SHADER + "CircleColor.cso").c_str());
-	// ピクセルシェーダー用の定数バッファを作成
 	psCircleColorConstBuf = CreateShaderConstantBuffer(sizeof(float) * 4);
+
+	// ピクセルシェーダのロード
+	psTexture = LoadPixelShader((PATH_SHADER + "Texture.cso").c_str());
+	psTextureConstBuf = CreateShaderConstantBuffer(sizeof(float) * 4);
+
+	// ピクセルシェーダのロード
+	psDisser = LoadPixelShader((PATH_SHADER + "Dissering.cso").c_str());
+	psDisserConstBuf = CreateShaderConstantBuffer(sizeof(float) * 4);
 }
 
 void Release(void)
@@ -65,13 +72,18 @@ void Release(void)
 
 	// ピクセルシェーダーを解放
 	DeleteShader(psSimpleColor_);
+
 	DeleteShader(psCustomColor);
+	DeleteShaderConstantBuffer(psCustomColorConstBuf);// ピクセルシェーダー用定数バッファを解放
+
 	DeleteShader(psCircleColor);
+	DeleteShaderConstantBuffer(psCircleColorConstBuf);// ピクセルシェーダー用定数バッファを解放
 
-	// ピクセルシェーダー用定数バッファを解放
-	DeleteShaderConstantBuffer(psCustomColorConstBuf);
-	DeleteShaderConstantBuffer(psCircleColorConstBuf);
+	DeleteShader(psTexture);
+	DeleteShaderConstantBuffer(psTextureConstBuf);// ピクセルシェーダー用定数バッファを解放
 
+	DeleteShader(psDisser);
+	DeleteShaderConstantBuffer(psDisserConstBuf);
 }
 
 void Run(void)
@@ -123,9 +135,14 @@ void Run(void)
 		//指定色の描画
 		DrawCustomColor();
 		mPosX += PLUS_X;
-
 	
 		DrawCircleColor();
+		mPosX += PLUS_X;
+
+		DrawTexture();
+		mPosX += PLUS_X;
+
+		DrowDisser();
 		mPosX += PLUS_X;
 
 		// 裏画面に描画
@@ -297,10 +314,11 @@ void DrawCustomColor(void)
 void DrawCircleColor(void)
 {
 
-	DrawTitle("指定色");
+	DrawTitle("円形");
 	//シェーダーの設定
 	SetUsePixelShader(psCircleColor);
-
+	// シェーダーにテクスチャを転送
+	SetUseTextureToShader(0, texDragon);
 
 
 	// ピクセルシェーダー用の定数バッファのアドレスを取得
@@ -319,4 +337,72 @@ void DrawCircleColor(void)
 	MakeSquereVertex();
 	//描画
 	DrawPolygonIndexed2DToShader(mVertex, 4, mIndex, 2);
+}
+
+void DrawTexture(void)
+{
+
+	DrawTitle("画像");
+	//シェーダーの設定
+	SetUsePixelShader(psTexture);
+
+
+
+	// ピクセルシェーダー用の定数バッファのアドレスを取得
+	COLOR_F* cbBuf = 
+		(COLOR_F*)GetBufferShaderConstantBuffer(psTextureConstBuf);
+	cbBuf->r = 1.0f;
+	cbBuf->g = 1.0f;
+	cbBuf->b = 1.0f;
+	cbBuf->a = 0.5f;
+
+	// ピクセルシェーダー用の定数バッファを更新して書き込んだ内容を反映する
+	UpdateShaderConstantBuffer(psTextureConstBuf);
+	// ピクセルシェーダー用の定数バッファを定数バッファレジスタにセット
+	SetShaderConstantBuffer(psTextureConstBuf, DX_SHADERTYPE_PIXEL, 0);
+
+	//ポリゴンの生成
+	MakeSquereVertex();
+
+
+	//透過して描画
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 0);
+	DrawPolygonIndexed2DToShader(mVertex, 4, mIndex, 2);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	DrawFrame();
+	
+}
+
+void DrowDisser(void)
+{
+
+	DrawTitle("画像");
+	//シェーダーの設定
+	SetUsePixelShader(psDisser);
+
+	// ピクセルシェーダー用の定数バッファのアドレスを取得
+	COLOR_F* cbBuf =
+		(COLOR_F*)GetBufferShaderConstantBuffer(psDisserConstBuf);
+	cbBuf->r = 1.0f;
+	cbBuf->g = 1.0f;
+	cbBuf->b = 1.0f;
+	cbBuf->a = 1.0f;
+
+
+	// ピクセルシェーダー用の定数バッファを更新して書き込んだ内容を反映する
+	UpdateShaderConstantBuffer(psDisserConstBuf);
+	// ピクセルシェーダー用の定数バッファを定数バッファレジスタにセット
+	SetShaderConstantBuffer(psDisserConstBuf, DX_SHADERTYPE_PIXEL, 0);
+
+	//ポリゴンの生成
+	MakeSquereVertex();
+
+
+	//透過して描画
+	//SetDrawBlendMode(DX_BLENDMODE_ALPHA, 0);
+	DrawPolygonIndexed2DToShader(mVertex, 4, mIndex, 2);
+	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	DrawFrame();
 }

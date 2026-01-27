@@ -31,11 +31,17 @@ float4 main(PS_INPUT psInput) : SV_TARGET
     //float4 color =  float4(uv.x + uv.y , uv.x+ uv.y,  uv.x + uv.y, 1.0f);
     //color.rgb /= 2.0f;
     //return color;
-    
+    //float x = abs(uv.x * uv.x - 0.5f);
+    //float y = abs(uv.y * uv.y - 0.5f);
     
     float x = abs(uv.x - 0.5f);
     float y = abs(uv.y - 0.5f);
-    return float4(x + y, x + y, x + y, 1.0f);
+    
+    //ïΩï˚ç™
+    //float dis = sqrt(x * x + y * y) * 2;
+    float dis = (x * x + y * y) * 4;
+    
+    return float4(dis,dis,dis, 1.0f);
 
 
 }

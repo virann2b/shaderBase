@@ -37,9 +37,16 @@ int psSimpleColor_;
 
 int psCustomColor;
 int psCustomColorConstBuf;
-
+//円
 int psCircleColor;
 int psCircleColorConstBuf;
+//テクスチャ
+int psTexture;
+int psTextureConstBuf;
+//ディザー
+int psDisser;
+int psDisserConstBuf;
+
 
 void Init(void);
 void Release(void);
@@ -60,3 +67,7 @@ void DrawSimpleColor(void);
 void DrawCustomColor(void);
 
 void DrawCircleColor(void);
+
+void DrawTexture(void);
+
+void DrowDisser(void);
