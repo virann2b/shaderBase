@@ -47,6 +47,14 @@ int psTextureConstBuf;
 int psDisser;
 int psDisserConstBuf;
 
+//ディザー
+int psScroll;
+int psScrollConstBuf;
+
+//ディザー
+int psDistortion;
+int psDistortionConstBuf;
+
 
 void Init(void);
 void Release(void);
@@ -71,3 +79,7 @@ void DrawCircleColor(void);
 void DrawTexture(void);
 
 void DrowDisser(void);
+
+void DrawScroll(void);
+
+void DrawDistortion(void);

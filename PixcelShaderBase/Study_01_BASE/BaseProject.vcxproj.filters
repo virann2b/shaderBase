@@ -33,5 +33,7 @@
     <FxCompile Include="Src\CircleColor.hlsl" />
     <FxCompile Include="Src\Texture.hlsl" />
     <FxCompile Include="Src\Dissering.hlsl" />
+    <FxCompile Include="Src\Scroll.hlsl" />
+    <FxCompile Include="Src\Distortion.hlsl" />
   </ItemGroup>
 </Project>

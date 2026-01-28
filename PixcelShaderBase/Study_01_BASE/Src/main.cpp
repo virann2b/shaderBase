@@ -65,6 +65,14 @@ void Init(void)
 	// ピクセルシェーダのロード
 	psDisser = LoadPixelShader((PATH_SHADER + "Dissering.cso").c_str());
 	psDisserConstBuf = CreateShaderConstantBuffer(sizeof(float) * 4);
+
+	// ピクセルシェーダのロード
+	psScroll = LoadPixelShader((PATH_SHADER + "Scroll.cso").c_str());
+	psScrollConstBuf = CreateShaderConstantBuffer(sizeof(float) * 4);
+
+	// ピクセルシェーダのロード
+	psDistortion = LoadPixelShader((PATH_SHADER + "Distortion.cso").c_str());
+	psDistortionConstBuf = CreateShaderConstantBuffer(sizeof(float) * 8);
 }
 
 void Release(void)
@@ -84,6 +92,12 @@ void Release(void)
 
 	DeleteShader(psDisser);
 	DeleteShaderConstantBuffer(psDisserConstBuf);
+
+	DeleteShader(psScroll);
+	DeleteShaderConstantBuffer(psScrollConstBuf);
+
+	DeleteShader(psDistortion);
+	DeleteShaderConstantBuffer(psDistortionConstBuf);
 }
 
 void Run(void)
@@ -144,6 +158,14 @@ void Run(void)
 
 		DrowDisser();
 		mPosX += PLUS_X;
+
+		NewLine();
+		DrawScroll();
+		mPosX += PLUS_X;
+
+		DrawDistortion();
+		mPosX += PLUS_X;
+
 
 		// 裏画面に描画
 		SetDrawScreen(DX_SCREEN_BACK);
@@ -341,7 +363,6 @@ void DrawCircleColor(void)
 
 void DrawTexture(void)
 {
-
 	DrawTitle("画像");
 	//シェーダーの設定
 	SetUsePixelShader(psTexture);
@@ -349,7 +370,7 @@ void DrawTexture(void)
 
 
 	// ピクセルシェーダー用の定数バッファのアドレスを取得
-	COLOR_F* cbBuf = 
+	COLOR_F* cbBuf =
 		(COLOR_F*)GetBufferShaderConstantBuffer(psTextureConstBuf);
 	cbBuf->r = 1.0f;
 	cbBuf->g = 1.0f;
@@ -371,6 +392,7 @@ void DrawTexture(void)
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	DrawFrame();
+	
 	
 }
 
@@ -403,6 +425,79 @@ void DrowDisser(void)
 	//SetDrawBlendMode(DX_BLENDMODE_ALPHA, 0);
 	DrawPolygonIndexed2DToShader(mVertex, 4, mIndex, 2);
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	DrawFrame();
+}
+
+void DrawScroll(void)
+{
+	DrawTitle("横スクロール");
+	//シェーダーの設定
+	SetUsePixelShader(psScroll);
+
+
+
+	// ピクセルシェーダー用の定数バッファのアドレスを取得
+	COLOR_F* cbBuf = 
+		(COLOR_F*)GetBufferShaderConstantBuffer(psScrollConstBuf);
+	cbBuf->r = mTotalTime; //g_time
+	cbBuf->g = 4.0f;	//g_speed
+
+
+	// ピクセルシェーダー用の定数バッファを更新して書き込んだ内容を反映する
+	UpdateShaderConstantBuffer(psScrollConstBuf);
+	// ピクセルシェーダー用の定数バッファを定数バッファレジスタにセット
+	SetShaderConstantBuffer(psScrollConstBuf, DX_SHADERTYPE_PIXEL, 0);
+
+	//ポリゴンの生成
+	MakeSquereVertex();
+
+	SetTextureAddressModeUV(DX_TEXADDRESS_WRAP, DX_TEXADDRESS_WRAP);
+
+
+	//透過して描画
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 0);
+	DrawPolygonIndexed2DToShader(mVertex, 4, mIndex, 2);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	DrawFrame();
+}
+
+void DrawDistortion(void)
+{
+	DrawTitle("横スクロール");
+	//シェーダーの設定
+	SetUsePixelShader(psDistortion);
+	SetUseTextureToShader(0, texFire);
+	SetUseTextureToShader(1, texNoize);
+
+
+
+	// ピクセルシェーダー用の定数バッファのアドレスを取得
+	COLOR_F* cbBuf =
+		(COLOR_F*)GetBufferShaderConstantBuffer(psDistortionConstBuf);
+	cbBuf->r = mTotalTime; //g_time
+	
+
+
+
+	// ピクセルシェーダー用の定数バッファを更新して書き込んだ内容を反映する
+	UpdateShaderConstantBuffer(psDistortionConstBuf);
+	// ピクセルシェーダー用の定数バッファを定数バッファレジスタにセット
+	SetShaderConstantBuffer(psDistortionConstBuf, DX_SHADERTYPE_PIXEL, 0);
+
+	//ポリゴンの生成
+	MakeSquereVertex();
+
+	SetTextureAddressModeUV(DX_TEXADDRESS_WRAP, DX_TEXADDRESS_WRAP);
+	
+
+
+
+	//透過して描画
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 0);
+	DrawPolygonIndexed2DToShader(mVertex, 4, mIndex, 2);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	DrawFrame();
 }
